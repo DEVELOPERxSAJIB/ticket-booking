@@ -5,6 +5,7 @@ const errorHandaler = require("http-errors");
 const connection = require("./config/dbConfig");
 const userRoute = require("./routes/userRoute");
 const movieRoute = require("./routes/movieRoute.js");
+const theatreRoute = require("./routes/theatreRoute");
 const { errorResponse } = require("./controllers/responseController");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
@@ -26,6 +27,7 @@ app.use(cookieParser());
 // routes
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/movie", movieRoute);
+app.use("/api/v1/theatre", theatreRoute);
 
 // error handaling middlewares
 app.use((req, res, next) => {

@@ -1,7 +1,8 @@
 import { Tabs } from "antd";
-import Theatres from "../../pages/Theatres/Theatres";
 import PageTitle from "../PageTitle/PageTitle";
-import Movies from "../../pages/Movies/Movies";
+import Movies from "../../pages/Dashboard/Movies/Movies";
+import Theatres from "../../pages/Dashboard/Theatres/Theatres";
+
 
 function AdminTab() {
   return (

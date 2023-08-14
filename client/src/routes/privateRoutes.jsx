@@ -1,9 +1,8 @@
 import Layout from "../components/Layout/Layout";
-import Admin from "../pages/Movies/Movies";
 import Dashboard from "../pages/Dashboard/Dashboard";
 import Home from "../pages/Home/Home";
-import Theatres from "../pages/Theatres/Theatres";
 import PrivateGuard from "./PrivateGuard";
+import Profile from "../pages/Profile/Profile";
 
 const privateRoutes = [
   {
@@ -21,12 +20,8 @@ const privateRoutes = [
             element : <Dashboard />
           }, 
           {
-            path : "/admin",
-            element : <Admin />
-          },
-          {
-            path : "/theatres",
-            element : <Theatres />
+            path : "/profile",
+            element : <Profile />
           }
         ],
       },

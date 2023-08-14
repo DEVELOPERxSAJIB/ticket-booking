@@ -1,14 +1,16 @@
 import "./Movies.css";
 import { Button, Col, DatePicker, Form, Input, Row, Select } from "antd";
 const { Option } = Select;
-import ModalPopUp from "../../utils/ModalPopUp";
+import ModalPopUp from "../../../utils/ModalPopUp";
 import TextArea from "antd/es/input/TextArea";
 import { useDispatch, useSelector } from "react-redux";
-import { createMovie, deleteMovie } from "../../features/movie/movieApiSlice";
-import { movieData } from "../../features/movie/movieSlice";
+import { createMovie, deleteMovie } from "../../../features/movie/movieApiSlice";
+import { movieData } from "../../../features/movie/movieSlice";
 import { useEffect, useState } from "react";
 import { CiEdit, CiTrash } from "react-icons/ci";
 import Swal from "sweetalert2";
+import MessageAlert from "../../../utils/MessageAlertAntD";
+import { setMessageEmpty } from "../../../features/theatre/theatreSlice";
 
 function Movies() {
   const dispatch = useDispatch();
@@ -23,16 +25,21 @@ function Movies() {
     dispatch(createMovie(values));
   };
 
+
   // set form value null
   useEffect(() => {
     if (message) {
       setModal(false);
       form.resetFields();
+      MessageAlert({ type: "success", content: message, duration: "3" });
+      dispatch(setMessageEmpty());
     }
     if (error) {
       setModal(true);
+      MessageAlert({ type: "error", content: error, duration: "3" });
+      dispatch(setMessageEmpty());
     }
-  }, [message, error, setModal, form]);
+  }, [message, error, setModal, form, dispatch]);
 
   // delete movie
   const handleDeleteMovie = (id) => {

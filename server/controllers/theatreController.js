@@ -1,0 +1,141 @@
+const Theatre = require("../models/Theatre");
+const { successResponse, errorResponse } = require("./responseController");
+
+/**
+ * @DESC All Theatre
+ * @ROUTE /api/v1/theatre/
+ * @method GET
+ * @access private
+ */
+const getAllTheatre = async (req, res, next) => {
+  try {
+    const theatre = await Theatre.find();
+
+    if (theatre.length == 0) {
+      return errorResponse(res, {
+        statusCode: 404,
+        message: "No theatre found",
+      });
+    }
+
+    successResponse(res, {
+      statusCode: 200,
+      message: "Geted all theatres",
+      payload: { theatre },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @DESC Create Theatre
+ * @ROUTE /api/v1/theatre/create-theatre
+ * @method POST
+ * @access private
+ */
+const createTheatre = async (req, res, next) => {
+  try {
+    const { name, address, phone, email } = req.body;
+
+    if (!name || !address || !phone || !email) {
+      return errorResponse(res, {
+        statusCode: 404,
+        message: "All feilds are required",
+      });
+    }
+
+    // existing theate check
+    const existsTheatre = await Theatre.findOne({ name });
+    if (existsTheatre) {
+      return errorResponse(res, {
+        statusCode: 400,
+        message: "Theatre already exists",
+      });
+    }
+
+    const options = {
+      name,
+      email,
+      address,
+      phone,
+    };
+
+    const theatre = await Theatre.create(options);
+
+    if (!theatre) {
+      return errorResponse(res, {
+        statusCode: 404,
+        message: "Can't create theater",
+      });
+    }
+
+    successResponse(res, {
+      statusCode: 200,
+      message: "Theatre created. Pending for approvement",
+      payload: { theatre },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @DESC Delete Theatre
+ * @ROUTE /api/v1/theatre/delete-theatre/:id
+ * @method delete
+ * @access private
+ */
+const deleteTheatre = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const theatre = await Theatre.findByIdAndDelete(id);
+
+    successResponse(res, {
+      statusCode: 200,
+      message: "Theatre deleted",
+      payload: { theatre },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @DESC Theatre Status Updae
+ * @ROUTE /api/v1/theatre/change-theatre-status/:id
+ * @method PUT
+ * @access private
+ */
+const statusChangeTheatre = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { isActive } = req.body;
+
+    const theatre = await Theatre.findByIdAndUpdate(
+      id,
+      {
+        isActive: !isActive,
+      },
+      {
+        new: true,
+      }
+    );
+
+    successResponse(res, {
+      statusCode: 200,
+      message: "Theatre status updated",
+      payload: { theatre },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = {
+  getAllTheatre,
+  createTheatre,
+  statusChangeTheatre,
+  deleteTheatre,
+};

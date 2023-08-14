@@ -1,0 +1,19 @@
+.add-theatre-form {
+    font-size: 16px;
+    line-height: 28px;
+    font-weight: 400;
+}
+.add-theatre-form td {
+    padding: 20px 0;
+}
+
+.green-button {
+    background-color: #13aa52; /* Change to your desired shade of green */
+    color: white;
+    border: none;
+  }
+  
+  .green-button:hover {
+    background-color: #007b33; /* Change to your desired shade of green on hover */
+    color: #fff !important;
+  }

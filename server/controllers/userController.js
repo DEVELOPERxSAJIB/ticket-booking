@@ -48,16 +48,8 @@ const userRegister = async (req, res, next) => {
       });
     }
 
-    // guess name from email
-    const guessName = () => {
-      if (!name) {
-        const pattern = /^([^@]+)@/;
-        return email.match(pattern)[1];
-      }
-    };
-
     const data = {
-      name: guessName(),
+      name,
       email,
       password,
       confirmPassword,

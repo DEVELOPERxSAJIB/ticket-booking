@@ -1,12 +1,14 @@
 import "./Navbar.scss";
 import { Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { userLogOut } from "../../features/user/userApiSlice";
-import { Avatar, Space } from "antd";
+import { Avatar } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 
 const Navbar = () => {
   const dispatch = useDispatch();
+
+  const { user } = useSelector((state) => state.auth);
 
   const handleLogOut = () => {
     dispatch(userLogOut());
@@ -45,9 +47,12 @@ const Navbar = () => {
                 Ticket Price
               </Link>
             </li>
-            <li>
-              <Link to={"/login"}>Admin</Link>
-            </li>
+            {user.isAdmin && (
+              <li>
+                <Link to={"/dashboard"}>Admin</Link>
+              </li>
+            )}
+
             <li>
               <Link onClick={handleLogOut} to={"/"}>
                 Logout
@@ -56,12 +61,14 @@ const Navbar = () => {
           </ul>
         </div>
 
-        <div className="user-profile">
-          <Avatar
-            style={{ backgroundColor: "#5F1A89", cursor: "pointer" }}
-            icon={<UserOutlined />}
-          />
-        </div>
+        <Link to={user.isAdmin ? "/dashboard" : "/profile"}>
+          <div className="user-profile">
+            <Avatar
+              style={{ backgroundColor: "#5F1A89", cursor: "pointer" }}
+              icon={<UserOutlined />}
+            />
+          </div>
+        </Link>
       </div>
     </div>
   );

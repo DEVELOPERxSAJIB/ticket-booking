@@ -1,9 +1,16 @@
 import { Modal } from "antd";
 
-function ModalPopUp({ open, title = "Add", okay = false, cancle = false, children }) {
+function ModalPopUp({
+  open,
+  title = "Add",
+  okay = false,
+  cancle = false,
+  width = "800px",
+  children,
+}) {
   return (
     <Modal
-      width={"800px"}
+      width={width}
       title={title}
       centered
       open={open}

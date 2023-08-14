@@ -7,6 +7,7 @@ import { useDispatch } from "react-redux";
 import { getLoggedInUserData } from "./features/user/userApiSlice";
 import route from "./routes/route";
 import { getAllmovies } from "./features/movie/movieApiSlice";
+import { getAllTheatre } from "./features/theatre/theatreApiSlice";
 
 function App() {
   const dispatch = useDispatch();
@@ -19,6 +20,7 @@ function App() {
 
   useEffect(() => {
     dispatch(getAllmovies())
+    dispatch(getAllTheatre())
   }, [dispatch])
 
   return (
