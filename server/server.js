@@ -6,6 +6,7 @@ const connection = require("./config/dbConfig");
 const userRoute = require("./routes/userRoute");
 const movieRoute = require("./routes/movieRoute.js");
 const theatreRoute = require("./routes/theatreRoute");
+const showRoute = require("./routes/showRoute");
 const { errorResponse } = require("./controllers/responseController");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
@@ -28,6 +29,7 @@ app.use(cookieParser());
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/movie", movieRoute);
 app.use("/api/v1/theatre", theatreRoute);
+app.use("/api/v1/show", showRoute);
 
 // error handaling middlewares
 app.use((req, res, next) => {

@@ -56,6 +56,25 @@ export const deleteTheatre = createAsyncThunk(
   }
 );
 
+// get single theatre
+export const singleTheatre = createAsyncThunk(
+  "theatre/singleTheatre",
+  async (id) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3030/api/v1/theatre/single-theatre/${id}`,
+        {
+          withCredentials: true,
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response.data.message);
+    }
+  }
+);
+
 // theatre stauts change
 export const updateTheatreStatus = createAsyncThunk(
   "theatre/updateTheatreStatus",

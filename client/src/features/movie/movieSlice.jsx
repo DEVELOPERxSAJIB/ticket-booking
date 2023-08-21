@@ -1,5 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { createMovie, deleteMovie, getAllmovies } from "./movieApiSlice";
+import {
+  createMovie,
+  deleteMovie,
+  getAllmovies,
+  getSingleMovies,
+} from "./movieApiSlice";
 
 const movieSlice = createSlice({
   name: "movies",
@@ -8,6 +13,7 @@ const movieSlice = createSlice({
     message: "",
     error: "",
     loader: false,
+    single: "",
   },
   reducers: {
     setMessageEmpty: (state) => {
@@ -36,7 +42,7 @@ const movieSlice = createSlice({
       })
       .addCase(createMovie.rejected, (state, action) => {
         state.loader = false;
-        state.error = action.error.message
+        state.error = action.error.message;
       })
       .addCase(createMovie.fulfilled, (state, action) => {
         state.loader = false;
@@ -52,6 +58,9 @@ const movieSlice = createSlice({
         state.movie = state.movie.filter(
           (data) => data._id !== action.payload.payload.movie._id
         );
+      })
+      .addCase(getSingleMovies.fulfilled, (state, action) => {
+        state.single = action.payload.payload.movie;
       });
   },
 });

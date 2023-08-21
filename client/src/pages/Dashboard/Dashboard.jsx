@@ -1,9 +1,10 @@
 import "./Dashboard.css";
-import AdminTab from "../../components/AdminTab/AdminTab";
+import DashboardTab from "../../components/DashboardTab/DashboardTab"
 import Header from "../../components/Header/Header";
 import { movieData } from "../../features/movie/movieSlice";
 import { useSelector } from "react-redux";
 import MainLoader from "../../utils/MainLoader";
+import Navbar from "../../components/Navbar/Navbar";
 
 function Dashboard() {
 
@@ -13,10 +14,11 @@ function Dashboard() {
   return (
     <>
       <Header />
+      <Navbar />
       {loader && <MainLoader />}
       <div className="dashboard-wrapper">
         <div className="dashboard-container shadow">
-          <AdminTab />
+          <DashboardTab />
         </div>
       </div>
     </>

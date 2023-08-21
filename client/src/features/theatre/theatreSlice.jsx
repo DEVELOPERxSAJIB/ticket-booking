@@ -3,6 +3,7 @@ import {
   createTheatre,
   deleteTheatre,
   getAllTheatre,
+  singleTheatre,
   updateTheatreStatus,
 } from "./theatreApiSlice";
 
@@ -13,6 +14,7 @@ const theatreSlice = createSlice({
     message: "",
     error: "",
     loader: "",
+    single : '',
   },
 
   reducers: {
@@ -57,12 +59,17 @@ const theatreSlice = createSlice({
           )
         ] = action.payload.payload.theatre;
       })
+      .addCase(singleTheatre.fulfilled, (state, action) => {
+        state.single = state.theatre.filter(
+          (data) => data._id === action.payload.payload.theatre._id
+        );
+      })
       .addCase(deleteTheatre.pending, (state) => {
         state.loader = true;
       })
       .addCase(deleteTheatre.fulfilled, (state, action) => {
         state.loader = false;
-        state.message = action.payload.message
+        state.message = action.payload.message;
         state.theatre = state.theatre.filter(
           (data) => data._id !== action.payload.payload.theatre._id
         );

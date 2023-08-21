@@ -103,6 +103,28 @@ const deleteTheatre = async (req, res, next) => {
 };
 
 /**
+ * @DESC Get Single Theatre
+ * @ROUTE /api/v1/theatre/single-theatre/:id
+ * @method get
+ * @access private
+ */
+const getSingleTheatre = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const theatre = await Theatre.findById(id);
+
+    successResponse(res, {
+      statusCode: 200,
+      message: "",
+      payload: { theatre },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
  * @DESC Theatre Status Updae
  * @ROUTE /api/v1/theatre/change-theatre-status/:id
  * @method PUT
@@ -138,4 +160,5 @@ module.exports = {
   createTheatre,
   statusChangeTheatre,
   deleteTheatre,
+  getSingleTheatre
 };

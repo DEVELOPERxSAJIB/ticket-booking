@@ -21,7 +21,6 @@ export const getAllmovies = createAsyncThunk("movie/getAllmovies", async () => {
 export const createMovie = createAsyncThunk(
   "movie/createMovie",
   async (data) => {
-
     try {
       const response = await axios.post(
         `http://localhost:3030/api/v1/movie/create-movie`,
@@ -53,3 +52,21 @@ export const deleteMovie = createAsyncThunk("movie/deleteMovie", async (id) => {
     throw new Error(error.response.data.error);
   }
 });
+
+// get single movie
+export const getSingleMovies = createAsyncThunk(
+  "movie/getSingleMovies",
+  async (id) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3030/api/v1/movie/single-movie/${id}`,
+        {
+          withCredentials: true,
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+);

@@ -4,6 +4,7 @@ const {
   createTheatre,
   statusChangeTheatre,
   deleteTheatre,
+  getSingleTheatre,
 } = require("../controllers/theatreController");
 const verifyToken = require("../helper/verifyToken");
 
@@ -16,6 +17,7 @@ theatreRoute.get("/", getAllTheatre);
 theatreRoute.post("/create-theatre", createTheatre);
 theatreRoute.put("/change-theatre-status/:id", statusChangeTheatre);
 theatreRoute.delete("/delete-theatre/:id", deleteTheatre);
+theatreRoute.get("/single-theatre/:id", getSingleTheatre);
 
 // export user routes
 module.exports = theatreRoute;

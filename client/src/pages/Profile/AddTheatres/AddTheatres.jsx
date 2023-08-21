@@ -1,25 +1,35 @@
 import "./AddTheatre.css";
-import { Button, Col, Form, Input, Row } from "antd";
+import { Button, Col, Form, Input, Row, Select } from "antd";
 import ModalPopUp from "../../../utils/ModalPopUp";
 import TextArea from "antd/es/input/TextArea";
 import { CiEdit, CiTrash } from "react-icons/ci";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { createTheatre, deleteTheatre } from "../../../features/theatre/theatreApiSlice";
+import {
+  createTheatre,
+  deleteTheatre,
+  singleTheatre,
+} from "../../../features/theatre/theatreApiSlice";
 import {
   setMessageEmpty,
   theatreStateData,
 } from "../../../features/theatre/theatreSlice";
 import MessageAlert from "../../../utils/MessageAlertAntD";
-import { AiOutlinePlus } from "react-icons/ai";
+import {
+  AiOutlinePlus,
+  AiOutlineArrowLeft,
+  AiOutlineCheck,
+} from "react-icons/ai";
 import Swal from "sweetalert2";
+import { movieData } from "../../../features/movie/movieSlice";
 
 const AddTheatres = () => {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
 
   const { user } = useSelector((state) => state.auth);
-  const { theatre, message, error } = useSelector(theatreStateData);
+  const { theatre, message, error, single } = useSelector(theatreStateData);
+  const { movie } = useSelector(movieData);
 
   const [modal, setModal] = useState(false);
 
@@ -40,10 +50,10 @@ const AddTheatres = () => {
       confirmButtonText: "Delete",
     }).then((result) => {
       if (result.isConfirmed) {
-        dispatch(deleteTheatre(id))
+        dispatch(deleteTheatre(id));
       }
     });
-  }
+  };
 
   // set form value null
   useEffect(() => {
@@ -59,6 +69,24 @@ const AddTheatres = () => {
       dispatch(setMessageEmpty());
     }
   }, [message, error, setModal, form, dispatch]);
+
+  const [showsModal, setShowsModal] = useState(false);
+  const [view, setViewModal] = useState("");
+
+  const handleAddShowsTable = (id) => {
+    setShowsModal(true);
+    dispatch(singleTheatre(id));
+    setViewModal("table");
+  };
+
+  const handleAddShows = () => {
+    setViewModal("form");
+  };
+
+  // create show form submit
+  const handleSubmitShow = (values) => {
+    console.log(values);
+  };
 
   return (
     <>
@@ -115,6 +143,136 @@ const AddTheatres = () => {
         </Form>
       </ModalPopUp>
 
+      <ModalPopUp
+        title=""
+        width={"1400px"}
+        open={showsModal}
+        okay={() => setShowsModal(false)}
+        cancle={() => setShowsModal(false)}
+      >
+        {view === "table" && (
+          <div className="table-responsive shows-table">
+            <h5>Theatre : {[...single].map((item) => item.name)} </h5>
+            <hr />
+            <div className="add-show d-flex justify-content-between mb-2">
+              <h4 className="mt-2">Shows :</h4>
+              <Button
+                onClick={handleAddShows}
+                size="large"
+                className="ant-btn ant-btn-primary-outline"
+              >
+                <AiOutlinePlus />
+                &nbsp;Add Shows
+              </Button>
+            </div>
+            <table className="table table-striped">
+              <thead>
+                <tr>
+                  <th scope="col">Show Name</th>
+                  <th scope="col">Date</th>
+                  <th scope="col">Time</th>
+                  <th scope="col">Movie</th>
+                  <th scope="col">Ticket Price</th>
+                  <th scope="col">Total Seats</th>
+                  <th scope="col">Available Seats</th>
+                  <th scope="col">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="no-data-tr">
+                  <td colSpan={10}>No Data Found</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {view === "form" && (
+          <>
+            <div className="table-responsive shows-table">
+              <h5>Theatre : {[...single]?.map((item) => item.name)} </h5>
+              <hr />
+              <div className="add-show d-flex justify-content-between mb-3">
+                <h4 className="mt-2">Create a show</h4>
+              </div>
+            </div>
+
+            <div>
+              <Form form={form} layout="vertical" onFinish={handleSubmitShow}>
+                <Row gutter={16}>
+                  <Col span={"8"}>
+                    <Form.Item label="Name" name={"name"} required>
+                      <Input type="text" />
+                    </Form.Item>
+                  </Col>
+                  <Col span={"8"}>
+                    <Form.Item label={"Date"} required name={"date"}>
+                      <Input type="date" />
+                    </Form.Item>
+                  </Col>
+                  <Col span={"8"}>
+                    <Form.Item label={"Time"} required name={"time"}>
+                      <Input style={{ width: "100%" }} type="time" />
+                    </Form.Item>
+                  </Col>
+                  <Col span={"8"}>
+                    <Form.Item label={"Movie"} required>
+                      <Select name="movie" placeholder="select a movie">
+                        <Select.Option>-Select Movie-</Select.Option>
+                        {movie.map((item, index) => {
+                          return (
+                            <Select.Option key={index} value={item._id}>
+                              {item.title}
+                            </Select.Option>
+                          );
+                        })}
+                      </Select>
+                    </Form.Item>
+                  </Col>
+                  <Col span={8}>
+                    <Form.Item
+                      label="Ticket Price"
+                      required
+                      name={"ticketPrice"}
+                    >
+                      <Input type="text" />
+                    </Form.Item>
+                  </Col>
+                  <Col span={8}>
+                    <Form.Item
+                      label="Toatal Seats"
+                      required
+                      name={"totalSeats"}
+                    >
+                      <Input type="text" />
+                    </Form.Item>
+                  </Col>
+                  <Col span={24} className="d-flex justify-content-end">
+                    <Button
+                      onClick={() => setViewModal("table")}
+                      size="large"
+                      className="ant-btn ant-btn-dangerous me-1"
+                    >
+                      <AiOutlineArrowLeft />
+                      &nbsp;Go Back
+                    </Button>
+                    <Button
+                      size="large"
+                      type="primary"
+                      htmlType="submit"
+                      className="ant-btn ant-btn-primary"
+                    >
+                      <AiOutlineCheck />
+                      &nbsp;SAVE
+                    </Button>
+                  </Col>
+                </Row>
+              </Form>
+            </div>
+          </>
+        )}
+      </ModalPopUp>
+
       {!theatre ? (
         <table className="table">
           <thead className="thead-light d-flex justify-content-center">
@@ -160,7 +318,11 @@ const AddTheatres = () => {
                       <CiTrash />
                     </Button>
                     {item.isActive && (
-                      <Button className="green-button ms-1" size="small">
+                      <Button
+                        onClick={() => handleAddShowsTable(item._id)}
+                        className="green-button ms-1"
+                        size="small"
+                      >
                         <AiOutlinePlus />
                         &nbsp; Show&apos;s
                       </Button>
