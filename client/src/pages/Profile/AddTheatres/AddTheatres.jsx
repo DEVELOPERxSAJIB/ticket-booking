@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   createTheatre,
   deleteTheatre,
-  singleTheatre,
+  getTheatreByOwner,
 } from "../../../features/theatre/theatreApiSlice";
 import {
   setMessageEmpty,
@@ -19,16 +19,29 @@ import {
   AiOutlinePlus,
   AiOutlineArrowLeft,
   AiOutlineCheck,
+  AiOutlineDelete,
 } from "react-icons/ai";
 import Swal from "sweetalert2";
 import { movieData } from "../../../features/movie/movieSlice";
+import {
+  createShow,
+  deleteShow,
+  getShowsByTheatre,
+} from "../../../features/show/showApiSlice";
+import { showsMessageNull } from "../../../features/show/showSlice";
+import moment from "moment";
 
 const AddTheatres = () => {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
 
   const { user } = useSelector((state) => state.auth);
-  const { theatre, message, error, single } = useSelector(theatreStateData);
+  const { theatre, message, error } = useSelector(theatreStateData);
+  const {
+    show,
+    message: showMessage,
+    error: showError,
+  } = useSelector((state) => state.shows);
   const { movie } = useSelector(movieData);
 
   const [modal, setModal] = useState(false);
@@ -55,38 +68,77 @@ const AddTheatres = () => {
     });
   };
 
+  const [showsModal, setShowsModal] = useState(false);
+  const [view, setViewModal] = useState("");
+  const [clikedTheatre, setClikedTheatre] = useState("");
+
+  const handleAddShowsTable = (id) => {
+    setClikedTheatre(theatre.filter((data) => data._id === id)[0]);
+    setShowsModal(true);
+    setViewModal("table");
+    dispatch(
+      getShowsByTheatre({
+        theatreId: id,
+      })
+    );
+  };
+
+  // create show form submit
+  const handleAddAShow = (values) => {
+    values.theatre = clikedTheatre._id;
+    dispatch(createShow(values));
+  };
+
+  // delete show from theatre
+  const handleDeleteShowFromTheatre = (id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "This will delete show forever",
+      icon: "warning",
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      showCancelButton: true,
+      confirmButtonText: "Delete",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        dispatch(deleteShow(id));
+      }
+    });
+  };
+
+  useEffect(() => {
+    dispatch(
+      getTheatreByOwner({
+        ownerId: user._id,
+      })
+    );
+  }, [dispatch, user._id]);
+
   // set form value null
   useEffect(() => {
     if (message) {
       form.resetFields();
-      setModal(false);
       MessageAlert({ type: "success", content: message });
       dispatch(setMessageEmpty());
     }
     if (error) {
-      setModal(true);
       MessageAlert({ type: "error", content: error });
       dispatch(setMessageEmpty());
     }
   }, [message, error, setModal, form, dispatch]);
 
-  const [showsModal, setShowsModal] = useState(false);
-  const [view, setViewModal] = useState("");
-
-  const handleAddShowsTable = (id) => {
-    setShowsModal(true);
-    dispatch(singleTheatre(id));
-    setViewModal("table");
-  };
-
-  const handleAddShows = () => {
-    setViewModal("form");
-  };
-
-  // create show form submit
-  const handleSubmitShow = (values) => {
-    console.log(values);
-  };
+  useEffect(() => {
+    if (showMessage) {
+      form.resetFields();
+      MessageAlert({ type: "success", content: showMessage });
+      dispatch(showsMessageNull());
+      setViewModal("table");
+    }
+    if (showError) {
+      MessageAlert({ type: "error", content: showError });
+      dispatch(showsMessageNull());
+    }
+  }, [dispatch, form, showError, showMessage]);
 
   return (
     <>
@@ -94,6 +146,7 @@ const AddTheatres = () => {
         <Button onClick={() => setModal(true)}>Add Theatres</Button>
       </div>
 
+      {/* theatre add modal */}
       <ModalPopUp
         title="Add a Theatre"
         width="600px"
@@ -143,21 +196,24 @@ const AddTheatres = () => {
         </Form>
       </ModalPopUp>
 
+      {/* Show add modal */}
       <ModalPopUp
         title=""
         width={"1400px"}
         open={showsModal}
         okay={() => setShowsModal(false)}
-        cancle={() => setShowsModal(false)}
+        cancle={() => {
+          setShowsModal(false);
+        }}
       >
         {view === "table" && (
           <div className="table-responsive shows-table">
-            <h5>Theatre : {[...single].map((item) => item.name)} </h5>
+            <h5>Theatre : {clikedTheatre.name} </h5>
             <hr />
             <div className="add-show d-flex justify-content-between mb-2">
               <h4 className="mt-2">Shows :</h4>
               <Button
-                onClick={handleAddShows}
+                onClick={() => setViewModal("form")}
                 size="large"
                 className="ant-btn ant-btn-primary-outline"
               >
@@ -165,6 +221,7 @@ const AddTheatres = () => {
                 &nbsp;Add Shows
               </Button>
             </div>
+
             <table className="table table-striped">
               <thead>
                 <tr>
@@ -179,9 +236,37 @@ const AddTheatres = () => {
                 </tr>
               </thead>
               <tbody>
-                <tr className="no-data-tr">
-                  <td colSpan={10}>No Data Found</td>
-                </tr>
+                {show.length === 0 && (
+                  <tr className="no-data-tr">
+                    <td colSpan={10}>No Data Found</td>
+                  </tr>
+                )}
+                {show?.map((item, index) => {
+                  return (
+                    <tr key={index} className="show-list">
+                      <td className="py-3">{item.name}</td>
+                      <td className="py-3">
+                        {moment(item.date).format("MMM Do YYYY")}
+                      </td>
+                      <td className="py-3">{item.time}</td>
+                      <td className="py-3">{item?.movie?.title}</td>
+                      <td className="py-3">{item.ticketPrice} tk</td>
+                      <td className="py-3">{item.totalSeats}</td>
+                      <td className="py-3">
+                        {item.totalSeats - item.bookedSeats}
+                      </td>
+                      <td className="text-end py-3">
+                        <Button
+                          onClick={() => handleDeleteShowFromTheatre(item._id)}
+                          className="ant-btn btn-dangerous"
+                          size="small"
+                        >
+                          <AiOutlineDelete />
+                        </Button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -190,7 +275,7 @@ const AddTheatres = () => {
         {view === "form" && (
           <>
             <div className="table-responsive shows-table">
-              <h5>Theatre : {[...single]?.map((item) => item.name)} </h5>
+              <h5>Theatre : {clikedTheatre.name} </h5>
               <hr />
               <div className="add-show d-flex justify-content-between mb-3">
                 <h4 className="mt-2">Create a show</h4>
@@ -198,7 +283,7 @@ const AddTheatres = () => {
             </div>
 
             <div>
-              <Form form={form} layout="vertical" onFinish={handleSubmitShow}>
+              <Form form={form} layout="vertical" onFinish={handleAddAShow}>
                 <Row gutter={16}>
                   <Col span={"8"}>
                     <Form.Item label="Name" name={"name"} required>
@@ -207,7 +292,10 @@ const AddTheatres = () => {
                   </Col>
                   <Col span={"8"}>
                     <Form.Item label={"Date"} required name={"date"}>
-                      <Input type="date" />
+                      <Input
+                        type="date"
+                        min={new Date().toISOString().split("T")[0]}
+                      />
                     </Form.Item>
                   </Col>
                   <Col span={"8"}>
@@ -216,8 +304,8 @@ const AddTheatres = () => {
                     </Form.Item>
                   </Col>
                   <Col span={"8"}>
-                    <Form.Item label={"Movie"} required>
-                      <Select name="movie" placeholder="select a movie">
+                    <Form.Item label={"Movie"} name="movie" required>
+                      <Select placeholder="select a movie">
                         <Select.Option>-Select Movie-</Select.Option>
                         {movie.map((item, index) => {
                           return (

@@ -1,19 +1,57 @@
 const Show = require("../models/Show");
-const { successResponse } = require("./responseController");
+const { successResponse, errorResponse } = require("./responseController");
 
 /**
- * @DESC Create Show
- * @ROUTE api/v1/show/create-show
+ * @DESC Get all Show
+ * @ROUTE api/v1/show
+ * @method GET
+ * @access Private
+ */
+const getAllShow = async (req, res, next) => {
+  try {
+    const show = await Show.find().populate("movie");
+
+    successResponse(res, {
+      statusCode: 200,
+      payload: {
+        show,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @DESC Get Show
+ * @ROUTE api/v1/show
  * @method POST
  * @access Private
  */
-const getAllShow = (req, res, next) => {
-    try {
-        
-    } catch (error) {
-        next(error)
+const getAllShowByTheatre = async (req, res, next) => {
+  try {
+    const { theatreId } = req.body;
+
+    const show = await Show.find({ theatre: theatreId }).populate("movie");
+
+    if (show.length <= 0) {
+      return errorResponse(res, {
+        statusCode: 400,
+        message: "No Shows Found",
+      });
     }
-}
+
+    successResponse(res, {
+      statusCode: 200,
+      message: "Showing all shows",
+      payload: {
+        show,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 /**
  * @DESC Create Show
@@ -24,7 +62,8 @@ const getAllShow = (req, res, next) => {
 // create a show
 const createShow = async (req, res, next) => {
   try {
-    const { name, date, time, ticketPrice, movie, totalSeats } = req.body;
+    const { name, date, time, ticketPrice, movie, totalSeats, theatre } =
+      req.body;
 
     const show = await Show.create({
       name,
@@ -33,6 +72,7 @@ const createShow = async (req, res, next) => {
       movie,
       ticketPrice,
       totalSeats,
+      theatre,
     });
 
     successResponse(res, {
@@ -45,4 +85,33 @@ const createShow = async (req, res, next) => {
   }
 };
 
-module.exports = { createShow }
+/**
+ * @DESC Delete Show
+ * @ROUTE api/v1/show/delete-show/:id
+ * @method DELETE
+ * @access Private
+ */
+const deleteShowFromTheatre = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const show = await Show.findByIdAndDelete(id);
+
+    successResponse(res, {
+      statusCode: 200,
+      message: "Show successfully deleted",
+      payload: {
+        show,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = {
+  createShow,
+  getAllShowByTheatre,
+  getAllShow,
+  deleteShowFromTheatre,
+};

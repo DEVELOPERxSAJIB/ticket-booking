@@ -8,11 +8,11 @@ export const Shows = ({
 }) => {
   <ModalPopUp title={title} width={width} open={open}>
     <Form>
-        <Col span={14}>
-            <Form.Item label="Name" name={"name"}>
-                <Input type="text"/>
-            </Form.Item>
-        </Col>
+      <Col span={14}>
+        <Form.Item label="Name" name={"name"}>
+          <Input type="text" />
+        </Form.Item>
+      </Col>
     </Form>
   </ModalPopUp>;
 };

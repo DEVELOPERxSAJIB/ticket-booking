@@ -52,3 +52,8 @@
 .shows-table .no-data-tr td {
   padding: 100px 0;
 }
+
+.show-list td {
+  font-size: 16px;
+  text-transform: capitalize;
+}

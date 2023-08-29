@@ -9,7 +9,37 @@ const { successResponse, errorResponse } = require("./responseController");
  */
 const getAllTheatre = async (req, res, next) => {
   try {
-    const theatre = await Theatre.find();
+    const theatre = await Theatre.find().populate("owner");
+
+    if (theatre.length == 0) {
+      return errorResponse(res, {
+        statusCode: 404,
+        message: "No theatre found",
+      });
+    }
+
+    successResponse(res, {
+      statusCode: 200,
+      message: "Geted all theatres",
+      payload: { theatre },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @DESC All Theatre by owner
+ * @ROUTE /api/v1/theatre/get-theatre-by-owner
+ * @method GET
+ * @access private
+ */
+const getTheatreByOwner = async (req, res, next) => {
+  try {
+
+    const { ownerId } = req.body
+
+    const theatre = await Theatre.find({ owner : ownerId })
 
     if (theatre.length == 0) {
       return errorResponse(res, {
@@ -36,7 +66,7 @@ const getAllTheatre = async (req, res, next) => {
  */
 const createTheatre = async (req, res, next) => {
   try {
-    const { name, address, phone, email } = req.body;
+    const { name, address, phone, email, owner } = req.body;
 
     if (!name || !address || !phone || !email) {
       return errorResponse(res, {
@@ -59,6 +89,7 @@ const createTheatre = async (req, res, next) => {
       email,
       address,
       phone,
+      owner,
     };
 
     const theatre = await Theatre.create(options);
@@ -160,5 +191,6 @@ module.exports = {
   createTheatre,
   statusChangeTheatre,
   deleteTheatre,
-  getSingleTheatre
+  getSingleTheatre,
+  getTheatreByOwner
 };

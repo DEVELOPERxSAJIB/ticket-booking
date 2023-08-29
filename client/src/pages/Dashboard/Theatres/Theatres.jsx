@@ -12,7 +12,7 @@ import { updateTheatreStatus } from "../../../features/theatre/theatreApiSlice";
 function Theatres() {
   const dispatch = useDispatch();
 
-  const { theatre, message, error } = useSelector(theatreStateData);
+  const { alltheatre, message, error } = useSelector(theatreStateData);
 
   const handleChangeStatus = (isActive, id) => {
     Swal.fire({
@@ -43,7 +43,7 @@ function Theatres() {
 
   return (
     <>
-      {!theatre ? (
+      {!alltheatre ? (
         <table className="table">
           <thead className="thead-light d-flex justify-content-center">
             <td>
@@ -65,7 +65,7 @@ function Theatres() {
             </tr>
           </thead>
           <tbody>
-            {[...theatre]?.reverse().map((item, index) => {
+            {[...alltheatre]?.reverse().map((item, index) => {
               return (
                 <tr className="align-middle" key={index}>
                   <td>{index + 1}</td>
@@ -105,7 +105,7 @@ function Theatres() {
                       <Button
                         className="ant-btn"
                         onClick={() =>
-                          handleChangeStatus(theatre.isActive, item._id)
+                          handleChangeStatus(alltheatre.isActive, item._id)
                         }
                       >
                         Approve

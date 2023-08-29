@@ -19,9 +19,9 @@ function App() {
   }, [dispatch]);
 
   useEffect(() => {
-    dispatch(getAllmovies())
-    dispatch(getAllTheatre())
-  }, [dispatch])
+    dispatch(getAllmovies());
+    dispatch(getAllTheatre());
+  }, [dispatch]);
 
   return (
     <>

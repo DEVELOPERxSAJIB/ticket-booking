@@ -17,6 +17,26 @@ export const getAllTheatre = createAsyncThunk(
   }
 );
 
+// get theatre by owner
+export const getTheatreByOwner = createAsyncThunk(
+  "theatre/getTheatreByOwner",
+  async (data) => {
+    try {
+      const response = await axios.post(
+        `http://localhost:3030/api/v1/theatre/get-theatre-by-owner`,
+        data,
+        {
+          withCredentials: true,
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response.data.message);
+    }
+  }
+);
+
 // create a theatre
 export const createTheatre = createAsyncThunk(
   "theatre/createMovie",
@@ -44,25 +64,6 @@ export const deleteTheatre = createAsyncThunk(
     try {
       const response = await axios.delete(
         `http://localhost:3030/api/v1/theatre/delete-theatre/${id}`,
-        {
-          withCredentials: true,
-        }
-      );
-
-      return response.data;
-    } catch (error) {
-      throw new Error(error.response.data.message);
-    }
-  }
-);
-
-// get single theatre
-export const singleTheatre = createAsyncThunk(
-  "theatre/singleTheatre",
-  async (id) => {
-    try {
-      const response = await axios.get(
-        `http://localhost:3030/api/v1/theatre/single-theatre/${id}`,
         {
           withCredentials: true,
         }

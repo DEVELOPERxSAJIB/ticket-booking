@@ -3,7 +3,7 @@ import {
   createTheatre,
   deleteTheatre,
   getAllTheatre,
-  singleTheatre,
+  getTheatreByOwner,
   updateTheatreStatus,
 } from "./theatreApiSlice";
 
@@ -11,10 +11,10 @@ const theatreSlice = createSlice({
   name: "theatre",
   initialState: {
     theatre: [],
+    alltheatre : [],
     message: "",
     error: "",
     loader: "",
-    single : '',
   },
 
   reducers: {
@@ -31,7 +31,7 @@ const theatreSlice = createSlice({
       })
       .addCase(getAllTheatre.fulfilled, (state, action) => {
         (state.loader = false), (state.message = action.payload.message);
-        state.theatre = action.payload.payload.theatre;
+        state.alltheatre = action.payload.payload.theatre;
       })
       .addCase(getAllTheatre.rejected, (state, action) => {
         state.loader = false;
@@ -53,16 +53,11 @@ const theatreSlice = createSlice({
       .addCase(updateTheatreStatus.fulfilled, (state, action) => {
         state.loader = false;
         state.message = action.payload.message;
-        state.theatre[
-          state.theatre.findIndex(
+        state.alltheatre[
+          state.alltheatre.findIndex(
             (data) => data._id === action.payload.payload.theatre._id
           )
         ] = action.payload.payload.theatre;
-      })
-      .addCase(singleTheatre.fulfilled, (state, action) => {
-        state.single = state.theatre.filter(
-          (data) => data._id === action.payload.payload.theatre._id
-        );
       })
       .addCase(deleteTheatre.pending, (state) => {
         state.loader = true;
@@ -73,7 +68,14 @@ const theatreSlice = createSlice({
         state.theatre = state.theatre.filter(
           (data) => data._id !== action.payload.payload.theatre._id
         );
-      });
+      })
+      .addCase(getTheatreByOwner.pending, (state) => {
+        state.loader = true
+      })
+      .addCase(getTheatreByOwner.fulfilled, (state, action) => {
+        state.loader = false,
+        state.theatre = action.payload.payload.theatre
+      })
   },
 });
 
