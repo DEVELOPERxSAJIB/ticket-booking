@@ -44,6 +44,16 @@ const movieSchema = mongoose.Schema(
       trim: true,
       required: true,
     },
+    banner: {
+      type: String,
+      trim: true,
+      required: true,
+    },
+    trailer: {
+      type: String,
+      trim: true,
+      required: true,
+    },
   },
   {
     timestamps: true,

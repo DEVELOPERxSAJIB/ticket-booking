@@ -6,6 +6,7 @@ const {
   deleteTheatre,
   getSingleTheatre,
   getTheatreByOwner,
+  findUniqueTheatre,
 } = require("../controllers/theatreController");
 const verifyToken = require("../helper/verifyToken");
 
@@ -20,6 +21,7 @@ theatreRoute.post("/create-theatre", createTheatre);
 theatreRoute.put("/change-theatre-status/:id", statusChangeTheatre);
 theatreRoute.delete("/delete-theatre/:id", deleteTheatre);
 theatreRoute.get("/single-theatre/:id", getSingleTheatre);
+theatreRoute.post("/find-unique-theatre", findUniqueTheatre);
 
 // export user routes
 module.exports = theatreRoute;

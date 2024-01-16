@@ -53,7 +53,7 @@ function Register() {
     <>
       {loader && <MainLoader />}
       <AuthHeader />
-      <div className="main-wrapperr">
+      <div className="main-wrapperr px-3">
         <div className="content-wrapper">
           <div className="header-area">
             <p>Register to Cinetickets</p>
@@ -106,10 +106,10 @@ function Register() {
                   <option value="other">other</option>
                 </select>
               </div>
-              <div className="my-3">
+              {/* <div className="my-3" style={{ cursor : 'not-allowed' }}>
                 <label htmlFor="">Select Image</label>
-                <input type="file" className="form-control" />
-              </div>
+                <input style={{ cursor : 'not-allowed' }} type="file" className="form-control" />
+              </div> */}
               <div className="my-3">
                 <label htmlFor="">Password *</label>
                 <input

@@ -75,6 +75,8 @@ const createShow = async (req, res, next) => {
       theatre,
     });
 
+    await show.populate('movie')
+
     successResponse(res, {
       statusCode: 200,
       message: "Shows added successfully",

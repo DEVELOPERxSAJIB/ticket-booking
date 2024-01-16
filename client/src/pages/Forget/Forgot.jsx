@@ -5,7 +5,7 @@ function Forget() {
   return (
     <>
       <AuthHeader />
-      <div className="main-wrapper">
+      <div className="main-wrapper px-4">
         <div className="content-wrapper">
           <div className="header-area">
             <p>Reset your password</p>

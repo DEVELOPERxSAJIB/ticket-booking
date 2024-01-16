@@ -1,5 +1,5 @@
 import "./Movies.css";
-import { Button, Col, DatePicker, Form, Input, Row, Select } from "antd";
+import { Button, Col, Form, Input, Row, Select, Table } from "antd";
 const { Option } = Select;
 import ModalPopUp from "../../../utils/ModalPopUp";
 import TextArea from "antd/es/input/TextArea";
@@ -8,19 +8,20 @@ import {
   createMovie,
   deleteMovie,
   getSingleMovies,
+  updateMovie,
 } from "../../../features/movie/movieApiSlice";
 import { movieData } from "../../../features/movie/movieSlice";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { CiEdit, CiTrash } from "react-icons/ci";
 import { AiOutlineArrowsAlt } from "react-icons/ai";
 import Swal from "sweetalert2";
 import MessageAlert from "../../../utils/MessageAlertAntD";
 import { setMessageEmpty } from "../../../features/theatre/theatreSlice";
+import moment from "moment";
 
 function Movies() {
   const dispatch = useDispatch();
   const [form] = Form.useForm();
-  const formRef = useRef(null);
 
   const { movie, message, error, single } = useSelector(movieData);
 
@@ -34,23 +35,11 @@ function Movies() {
     dispatch(createMovie(values));
   };
 
-  // edit movie
-  const handleMovieEdit = (id) => {
-    formRef.current?.resetFields();
-    dispatch(getSingleMovies(id));
-    const singleMovie = movie.filter((data) => data._id === id);
-
-    if (singleMovie.length > 0) {
-      setSelectedMovie(singleMovie[0]);
-      setEditModal(true);
-      formRef.current?.resetFields();
-    }
+  const handleMovieDetailedit = (value) => {
+    console.log(value);
+    dispatch(updateMovie(value));
+    setEditModal(false)
   };
-
-  // const initialValues = {
-  //   title: selectedMovie.title,
-  //   description: selectedMovie.description,
-  // };
 
   // single movie show
   const handleMovieShow = (id) => {
@@ -91,235 +80,342 @@ function Movies() {
     });
   };
 
-  // useEffect(() => {
-  //   if(selectedMovie){
-  //       title : selectedMovie[0].title
-  //     }
-  //   }
-  // }, [selectedMovie]);
+  const columns = [
+    {
+      title: "No",
+      dataIndex: "index",
+      render: (text, record, index) => index + 1,
+    },
+    {
+      title: "Photo",
+      dataIndex: "image",
+      render: (id, record) => (
+        <img
+          src={record.poster}
+          style={{
+            objectFit: "cover",
+            borderRadius: "5px",
+            objectPosition: "top",
+          }}
+          alt=""
+          height={60}
+          width={80}
+        />
+      ),
+    },
+    {
+      title: "Name",
+      dataIndex: "title",
+    },
+    {
+      title: "Category",
+      dataIndex: "category",
+    },
+    {
+      title: "Release Date",
+      dataIndex: `releaseDate`,
+      render: (record) => moment(record.releaseDate).format("MMM Do YYYY"),
+    },
+    {
+      title: "Ganre",
+      dataIndex: "ganre",
+    },
+    {
+      title: "Duration",
+      render: (record) => <span>{record.duration} min</span>,
+    },
+    {
+      title: "Action",
+      render: (_id, record) => (
+        <div className="d-flex gap-1" style={{ cursor: "pointer" }}>
+          <Button
+            onClick={() => handleMovieShow(record._id)}
+            className="ant-btn ant-btn-ghost"
+            size="small"
+          >
+            <AiOutlineArrowsAlt />
+          </Button>
+
+          <Button
+            onClick={() => {
+              setSelectedMovie(record);
+              setEditModal(true);
+            }}
+            className="ant-btn ant-btn-primary"
+            size="small"
+          >
+            <CiEdit />
+          </Button>
+
+          <Button
+            className="ant-btn ant-btn-dangerous"
+            size="small"
+            onClick={() => handleDeleteMovie(record._id)}
+          >
+            <CiTrash />
+          </Button>
+        </div>
+      ),
+    },
+  ];
+
+  useEffect(() => {
+    form.resetFields();
+  });
 
   return (
     <>
-      <div className="admin d-flex justify-content-end">
+      <div className="admin d-flex justify-content-end mb-4">
         <Button onClick={() => setModal(true)}>Add Movie</Button>
       </div>
 
       {/* create modal */}
-      <ModalPopUp
-        title="Add a Movie"
-        open={modal}
-        okay={() => setModal(false)}
-        cancle={() => setModal(false)}
-      >
-        <div
-          style={{
-            width: "100%",
-            height: "3px",
-            borderRadius: "50%",
-            background: "#210035",
-            marginBottom: "15px",
+      {modal && (
+        <ModalPopUp
+          title="Add a Movie"
+          open={modal}
+          okay={() => {
+            setModal(false);
+            form.resetFields();
           }}
-          className="border"
-        ></div>
-        <Form form={form} layout="vertical" onFinish={handleMovieForm}>
-          <Row gutter={16}>
-            <Col span={"24"}>
-              <Form.Item label="Movie Title" name="title">
-                <Input type="text" />
-              </Form.Item>
-            </Col>
-            <Col span={24}>
-              <Form.Item label="Movie Description" name="description">
-                <TextArea type="text" />
-              </Form.Item>
-            </Col>
-            <Col span={6}>
-              <Form.Item label="Duration" name="duration">
-                <Input type="text" />
-              </Form.Item>
-            </Col>
-            <Col span={6}>
-              <Form.Item label="Language" name="language">
-                <Select placeholder="select a language">
-                  <Option>-Select-</Option>
-                  <Option value="Bangla"></Option>
-                  <Option value="English"></Option>
-                  <Option value="Korean"></Option>
-                  <Option value="Japanes"></Option>
-                  <Option value="Chines"></Option>
-                  <Option value="Hindi"></Option>
-                  <Option value="Tamil"></Option>
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col>
-              <Form.Item label="Movie Release Data" name="releaseDate">
-                <DatePicker style={{ width: "100%" }} type="date" />
-              </Form.Item>
-            </Col>
-            <Col span={"6"}>
-              <Form.Item label="Actors" name="actors">
-                <Input type="text" />
-              </Form.Item>
-            </Col>
-            <Col span={5}>
-              <Form.Item label="Ganre" name="ganre">
-                <Select placeholder="select a ganre">
-                  <Option>-Select-</Option>
-                  <Option value={"Action"}></Option>
-                  <Option value={"Thriller"}></Option>
-                  <Option value={"Si-Fi"}></Option>
-                  <Option value={"Romace"}></Option>
-                  <Option value={"Drama"}></Option>
-                  <Option value={"Horror"}></Option>
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={5}>
-              <Form.Item label="Category" name="category">
-                <Select placeholder="select a category">
-                  <Option>-Select-</Option>
-                  <Option value="2D"></Option>
-                  <Option value="3D"></Option>
-                  <Option value="Anime"></Option>
-                  <Option value="3D Anime"></Option>
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={14}>
-              <Form.Item label="Poster" name="poster">
-                <Input type="text" />
-              </Form.Item>
-            </Col>
-            <Col span={24} className="d-flex justify-content-end">
-              <Button
-                onClick={() => setModal(false)}
-                className="ant-btn ant-btn-dashed ant-btn-dangerous me-2"
-              >
-                Cancle
-              </Button>
-              <Button
-                type="primary"
-                htmlType="submit"
-                className="ant-btn ant-btn-primary"
-              >
-                SAVE
-              </Button>
-            </Col>
-          </Row>
-        </Form>
-      </ModalPopUp>
+          cancle={() => {
+            form.resetFields();
+            setModal(false);
+          }}
+        >
+          <div
+            style={{
+              width: "100%",
+              height: "3px",
+              borderRadius: "50%",
+              background: "#210035",
+              marginBottom: "15px",
+            }}
+            className="border"
+          ></div>
+          <Form form={form} layout="vertical" onFinish={handleMovieForm}>
+            <Row gutter={16}>
+              <Col span={"24"}>
+                <Form.Item label="Movie Title" name="title">
+                  <Input type="text" />
+                </Form.Item>
+              </Col>
+              <Col span={24}>
+                <Form.Item label="Movie Description" name="description">
+                  <TextArea type="text" />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item label="Duration" name="duration">
+                  <Input type="text" />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item label="Language" name="language">
+                  <Select placeholder="select a language">
+                    <Option>-Select-</Option>
+                    <Option value="Bangla">Bangla</Option>
+                    <Option value="English">English</Option>
+                    <Option value="Korean">Korean</Option>
+                    <Option value="Japanes">Japanes</Option>
+                    <Option value="Chines">Chines</Option>
+                    <Option value="Hindi">Hindi</Option>
+                    <Option value="Tamil">Tamil</Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+              <Col>
+                <Form.Item label="Movie Release Data" name="releaseDate">
+                  <Input type="date" />
+                </Form.Item>
+              </Col>
+              <Col span={"6"}>
+                <Form.Item label="Actors" name="actors">
+                  <Input type="text" />
+                </Form.Item>
+              </Col>
+              <Col span={5}>
+                <Form.Item label="Ganre" name="ganre">
+                  <Select placeholder="select a ganre">
+                    <Option>-Select-</Option>
+                    <Option value={"Action"}></Option>
+                    <Option value={"Thriller"}></Option>
+                    <Option value={"Si-Fi"}></Option>
+                    <Option value={"Romace"}></Option>
+                    <Option value={"Drama"}></Option>
+                    <Option value={"Horror"}></Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+              <Col span={5}>
+                <Form.Item label="Category" name="category">
+                  <Select placeholder="select a category">
+                    <Option>-Select-</Option>
+                    <Option value="2D"></Option>
+                    <Option value="3D"></Option>
+                    <Option value="Anime"></Option>
+                    <Option value="3D Anime"></Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+              <Col span={4}>
+                <Form.Item label="Trailer" name="trailer">
+                  <Input type="text" />
+                </Form.Item>
+              </Col>
+              <Col span={5}>
+                <Form.Item label="Banner" name="banner">
+                  <Input type="text" />
+                </Form.Item>
+              </Col>
+              <Col span={5}>
+                <Form.Item label="Poster" name="poster">
+                  <Input type="text" />
+                </Form.Item>
+              </Col>
+              <Col span={24} className="d-flex justify-content-end">
+                <Button
+                  onClick={() => {
+                    setModal(false), form.resetFields();
+                  }}
+                  className="ant-btn ant-btn-dashed ant-btn-dangerous me-2"
+                >
+                  Cancle
+                </Button>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  className="ant-btn ant-btn-primary"
+                >
+                  SAVE
+                </Button>
+              </Col>
+            </Row>
+          </Form>
+        </ModalPopUp>
+      )}
 
       {/* edit modal */}
-      <ModalPopUp
-        title="Update Movie Details"
-        open={editModal}
-        okay={() => setEditModal(false)}
-        cancle={() => {
-          setEditModal(false);
-          setSelectedMovie(null);
-          formRef.current?.resetFields();
-        }}
-      >
-        <Form
-          form={form}
-          ref={formRef}
-          name="control-ref"
-          initialValues={selectedMovie}
-          layout="vertical"
-          onFinish={handleMovieForm}
+
+      {editModal && (
+        <ModalPopUp
+          title="Update Movie Details"
+          open={editModal}
+          okay={() => {
+            setEditModal(false), form.resetFields();
+          }}
+          cancle={() => {
+            form.resetFields();
+            setEditModal(false);
+            setSelectedMovie(null);
+          }}
         >
-          <Row gutter={16}>
-            <Col span={"24"}>
-              <Form.Item label="Movie Title" name="title">
+          <Form
+            form={form}
+            initialValues={selectedMovie}
+            layout="vertical"
+            onFinish={handleMovieDetailedit}
+          >
+            <Row gutter={16}>
+              <Col span={"24"}>
+                <Form.Item label="Movie Title" name="title">
+                  <Input type="text" />
+                </Form.Item>
+              </Col>
+
+              <Form.Item hidden name="_id">
                 <Input type="text" />
               </Form.Item>
-            </Col>
-            <Col span={24}>
-              <Form.Item label="Movie Description" name="description">
-                <TextArea type="text" />
-              </Form.Item>
-            </Col>
-            <Col span={6}>
-              <Form.Item label="Duration" name="duration">
-                <Input type="text" />
-              </Form.Item>
-            </Col>
-            <Col span={6}>
-              <Form.Item label="Language" name="language">
-                <Select placeholder="select a language">
-                  <Option>-Select-</Option>
-                  <Option value="Bangla"></Option>
-                  <Option value="English"></Option>
-                  <Option value="Korean"></Option>
-                  <Option value="Japanes"></Option>
-                  <Option value="Chines"></Option>
-                  <Option value="Hindi"></Option>
-                  <Option value="Tamil"></Option>
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col>
-              <Form.Item label="Movie Release Data" name="releaseDate">
-                {/* <DatePicker style={{ width: "100%" }} type="date" /> */}
-              </Form.Item>
-            </Col>
-            <Col span={"6"}>
-              <Form.Item label="Actors" name="actors">
-                <Input type="text" />
-              </Form.Item>
-            </Col>
-            <Col span={5}>
-              <Form.Item label="Ganre" name="ganre">
-                <Select placeholder="select a ganre">
-                  <Option>-Select-</Option>
-                  <Option value={"Action"}></Option>
-                  <Option value={"Thriller"}></Option>
-                  <Option value={"Si-Fi"}></Option>
-                  <Option value={"Romace"}></Option>
-                  <Option value={"Drama"}></Option>
-                  <Option value={"Horror"}></Option>
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={5}>
-              <Form.Item label="Category" name="category">
-                <Select placeholder="select a category">
-                  <Option>-Select-</Option>
-                  <Option value="2D"></Option>
-                  <Option value="3D"></Option>
-                  <Option value="Anime"></Option>
-                  <Option value="3D Anime"></Option>
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={14}>
-              <Form.Item label="Poster" name="poster">
-                <Input type="text" />
-              </Form.Item>
-            </Col>
-            <Col span={24} className="d-flex justify-content-end">
-              <Button
-                onClick={() => {
-                  formRef.current?.resetFields();
-                  setSelectedMovie(null);
-                  setEditModal(null);
-                }}
-                className="ant-btn ant-btn-dashed ant-btn-dangerous me-2"
-              >
-                Cancle
-              </Button>
-              <Button
-                type="primary"
-                htmlType="submit"
-                className="ant-btn ant-btn-primary"
-              >
-                SAVE
-              </Button>
-            </Col>
-          </Row>
-        </Form>
-      </ModalPopUp>
+
+              <Col span={24}>
+                <Form.Item label="Movie Description" name="description">
+                  <TextArea type="text" />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item label="Duration" name="duration">
+                  <Input type="text" />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item label="Language" name="language">
+                  <Select placeholder="select a language">
+                    <Option>-Select-</Option>
+                    <Option value="Bangla"></Option>
+                    <Option value="English"></Option>
+                    <Option value="Korean"></Option>
+                    <Option value="Japanes"></Option>
+                    <Option value="Chines"></Option>
+                    <Option value="Hindi"></Option>
+                    <Option value="Tamil"></Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+              <Col span={"6"}>
+                <Form.Item label="Actors" name="actors">
+                  <Input type="text" />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item label="Ganre" name="ganre">
+                  <Select placeholder="select a ganre">
+                    <Option>-Select-</Option>
+                    <Option value={"Action"}></Option>
+                    <Option value={"Thriller"}></Option>
+                    <Option value={"Si-Fi"}></Option>
+                    <Option value={"Romace"}></Option>
+                    <Option value={"Drama"}></Option>
+                    <Option value={"Horror"}></Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+              <Col span={5}>
+                <Form.Item label="Category" name="category">
+                  <Select placeholder="select a category">
+                    <Option>-Select-</Option>
+                    <Option value="2D"></Option>
+                    <Option value="3D"></Option>
+                    <Option value="Anime"></Option>
+                    <Option value="3D Anime"></Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+              <Col span={4}>
+                <Form.Item label="Trailer" name="trailer">
+                  <Input type="text" />
+                </Form.Item>
+              </Col>
+              <Col span={7}>
+                <Form.Item label="Banner" name="banner">
+                  <Input type="text" />
+                </Form.Item>
+              </Col>
+              <Col span={8}>
+                <Form.Item label="Poster" name="poster">
+                  <Input type="text" />
+                </Form.Item>
+              </Col>
+              <Col span={24} className="d-flex justify-content-end">
+                <Button
+                  onClick={() => {
+                    setEditModal(false), form.resetFields();
+                  }}
+                  className="ant-btn ant-btn-dashed ant-btn-dangerous me-2"
+                >
+                  Cancle
+                </Button>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  className="ant-btn ant-btn-primary"
+                >
+                  SAVE
+                </Button>
+              </Col>
+            </Row>
+          </Form>
+        </ModalPopUp>
+      )}
 
       {/* Single movie show modal */}
       <ModalPopUp
@@ -346,6 +442,9 @@ function Movies() {
         </div>
       </ModalPopUp>
 
+      <Table columns={columns} dataSource={movie} />
+
+      {/* 
       <table className="table table-borderd mt-3">
         <thead>
           <tr>
@@ -359,12 +458,10 @@ function Movies() {
             <th>Action</th>
           </tr>
         </thead>
+
         <tbody>
           {movie &&
-            [...movie].reverse().map((item, index) => {
-              // const dateTimeString = item.releaseDate;
-              // const dateOnly = dateTimeString.split("T")[0];
-
+            [...movie]?.reverse().map((item, index) => {
               return (
                 <tr className="align-middle" key={index}>
                   <td>{index + 1}</td>
@@ -374,7 +471,7 @@ function Movies() {
                   </td>
                   <td>{item.category}</td>
                   <td>{item.ganre}</td>
-                  <td>{item.releaseDate}</td>
+                  <td>{moment(item.releaseDate).format("MMM Do YYYY")}</td>
                   <td>{item.duration} Min</td>
                   <td>
                     <Button
@@ -385,7 +482,7 @@ function Movies() {
                       <AiOutlineArrowsAlt />
                     </Button>
                     <Button
-                      onClick={() => handleMovieEdit(item._id)}
+                      onClick={() => handleMovieEdit(item)}
                       className="ant-btn ant-btn-primary"
                       size="small"
                     >
@@ -403,7 +500,7 @@ function Movies() {
               );
             })}
         </tbody>
-      </table>
+      </table> */}
     </>
   );
 }

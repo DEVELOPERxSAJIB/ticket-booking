@@ -37,6 +37,26 @@ export const createMovie = createAsyncThunk(
   }
 );
 
+// create a movie
+export const updateMovie = createAsyncThunk(
+  "movie/updateMovie",
+  async (data) => {
+    try {
+      const response = await axios.put(
+        `http://localhost:3030/api/v1/movie/update-movie/${data._id}`,
+        data,
+        {
+          withCredentials: true,
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response.data.message);
+    }
+  }
+);
+
 // delete movie
 export const deleteMovie = createAsyncThunk("movie/deleteMovie", async (id) => {
   try {

@@ -20,7 +20,7 @@ const getAllMovies = async (req, res, next) => {
 
     successResponse(res, {
       statusCode: 200,
-      message: "All of the movies are showing",
+      message: null,
       payload: { movie },
     });
   } catch (error) {
@@ -43,7 +43,7 @@ const getSingleMovies = async (req, res, next) => {
     if (!movie) {
       errorResponse(res, {
         statusCode: 404,
-        message: "can't get your movie",
+        message: "Can't get your movie",
       });
     }
 
@@ -75,6 +75,8 @@ const createMovie = async (req, res, next) => {
       poster,
       category,
       actors,
+      banner,
+      trailer
     } = req.body;
 
     const data = {
@@ -87,6 +89,8 @@ const createMovie = async (req, res, next) => {
       poster,
       category,
       actors,
+      banner,
+      trailer
     };
 
     const existsMovie = await Movie.findOne({ title });

@@ -4,7 +4,7 @@ const MainLoader = () => {
   return (
     <div className="lodader-parent">
       <div className="spinner">
-
+  
       </div>
     </div>
   );

@@ -10,6 +10,7 @@ const showRoute = require("./routes/showRoute");
 const { errorResponse } = require("./controllers/responseController");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
+const bookingRoute = require("./routes/bookingRoute.js");
 
 // init app
 const app = express();
@@ -30,6 +31,7 @@ app.use("/api/v1/user", userRoute);
 app.use("/api/v1/movie", movieRoute);
 app.use("/api/v1/theatre", theatreRoute);
 app.use("/api/v1/show", showRoute);
+app.use("/api/v1/booking", bookingRoute);
 
 // error handaling middlewares
 app.use((req, res, next) => {

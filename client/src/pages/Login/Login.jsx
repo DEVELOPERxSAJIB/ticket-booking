@@ -52,7 +52,7 @@ function Login() {
       {loader && <MainLoader />}
       <AuthHeader />
 
-      <div className="main-wrapper">
+      <div className="main-wrapper px-4">
         <div className="content-wrapper">
           <div className="header-area">
             <p>Login to Cinetickets</p>
@@ -93,7 +93,7 @@ function Login() {
             </div>
 
             <span>
-              Did you have an account yet?
+              Did you have an account yet?{" "}
               <Link to="/register">Register Now</Link>
             </span>
           </div>

@@ -1,3 +1,4 @@
+const Show = require("../models/Show");
 const Theatre = require("../models/Theatre");
 const { successResponse, errorResponse } = require("./responseController");
 
@@ -20,7 +21,7 @@ const getAllTheatre = async (req, res, next) => {
 
     successResponse(res, {
       statusCode: 200,
-      message: "Geted all theatres",
+      message: null,
       payload: { theatre },
     });
   } catch (error) {
@@ -36,10 +37,9 @@ const getAllTheatre = async (req, res, next) => {
  */
 const getTheatreByOwner = async (req, res, next) => {
   try {
+    const { ownerId } = req.body;
 
-    const { ownerId } = req.body
-
-    const theatre = await Theatre.find({ owner : ownerId })
+    const theatre = await Theatre.find({ owner: ownerId });
 
     if (theatre.length == 0) {
       return errorResponse(res, {
@@ -186,11 +186,59 @@ const statusChangeTheatre = async (req, res, next) => {
   }
 };
 
+/**
+ * @DESC Unique Theatre Find
+ * @ROUTE /api/v1/theatre/find-unique-theatre
+ * @method PUT
+ * @access private
+ */
+const findUniqueTheatre = async (req, res, next) => {
+  try {
+    const { movie, date,  } = req.body;
+
+    // find all show of a movie
+    const shows = await Show.find({ movie, date })
+      .populate("theatre")
+      .sort({ createdAt: -1 });
+
+    // find unique theatres
+    let uniqueTheatre = [];
+
+    shows.forEach((show) => {
+      const theatre = uniqueTheatre.find(
+        (data) => data._id == show.theatre._id
+      );
+
+      if (!theatre) {
+        const showsForThisTheatre = shows.filter(
+          (data) => data.theatre._id == show.theatre._id
+        );
+
+        uniqueTheatre.push({
+          ...show.theatre._doc,
+          show : showsForThisTheatre
+        });
+      }
+
+    });
+
+    successResponse(res, {
+      statusCode: 200,
+      message: "Theatre fetched",
+      payload: uniqueTheatre,
+    });
+
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getAllTheatre,
   createTheatre,
   statusChangeTheatre,
   deleteTheatre,
   getSingleTheatre,
-  getTheatreByOwner
+  getTheatreByOwner,
+  findUniqueTheatre,
 };

@@ -7,7 +7,7 @@ const verifyToken = (req, res, next) => {
     // const token = req.headers.Authorization || req.headers.authorization;
     // const accessToken = token.replace("Bearer ", "")
 
-    const accessToken = req.cookies.accessToken
+    const { accessToken } = req.cookies
 
     if (!accessToken) {
       return errorResponse(res, {
@@ -30,6 +30,8 @@ const verifyToken = (req, res, next) => {
         const user = await User.findOne({ email: decode.email }).select(
           "-password"
         );
+
+        console.log(user)
 
         req.user = user;
 

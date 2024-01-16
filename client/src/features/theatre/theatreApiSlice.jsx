@@ -95,3 +95,22 @@ export const updateTheatreStatus = createAsyncThunk(
     }
   }
 );
+
+// find unique theatre
+export const findUniqueTheatre = createAsyncThunk(
+  "theatre/findUniqueTheatre",
+  async (data) => {
+    try {
+      const response = await axios.post(
+        `http://localhost:3030/api/v1/theatre/find-unique-theatre`,
+        { date : data.date, movie : data.movie },
+        {
+          withCredentials: true,
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response.data.message);
+    }
+  }
+);

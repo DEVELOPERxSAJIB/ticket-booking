@@ -4,6 +4,7 @@ import {
   deleteMovie,
   getAllmovies,
   getSingleMovies,
+  updateMovie,
 } from "./movieApiSlice";
 
 const movieSlice = createSlice({
@@ -48,6 +49,22 @@ const movieSlice = createSlice({
         state.loader = false;
         state.message = action.payload.message;
         state.movie.push(action.payload.payload.movie);
+      })
+      .addCase(updateMovie.pending, (state) => {
+        state.loader = true;
+      })
+      .addCase(updateMovie.rejected, (state, action) => {
+        state.loader = false;
+        state.error = action.error.message;
+      })
+      .addCase(updateMovie.fulfilled, (state, action) => {
+        state.loader = false;
+        state.message = action.payload.message;
+        state.movie[
+          state.movie.findIndex(
+            (item) => item._id === action.payload.payload.movie._id
+          )
+        ] = action.payload.payload.movie;
       })
       .addCase(deleteMovie.pending, (state) => {
         state.loader = true;

@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs")
+const bcrypt = require("bcryptjs");
 
 const userSchema = mongoose.Schema(
   {
@@ -12,12 +12,12 @@ const userSchema = mongoose.Schema(
       required: [true, "Email is required"],
       trim: true,
       unique: true,
-      validate : {
-        validator : function(v){
-            return  /[a-z0-9]+@[a-z]+\.[a-z]{2,3}/.test(v);
+      validate: {
+        validator: function (v) {
+          return /[a-z0-9]+@[a-z]+\.[a-z]{2,3}/.test(v);
         },
-        message : "please, enter a valide email address"
-      }
+        message: "please, enter a valide email address",
+      },
     },
     phone: {
       type: String,
@@ -28,8 +28,8 @@ const userSchema = mongoose.Schema(
       type: String,
       required: [true, "Password is required"],
       trim: true,
-      minlength : [4, "password can't less then 4 charecter"],
-      set : (v) => bcrypt.hashSync(v, bcrypt.genSaltSync(10))
+      minlength: [4, "password can't less then 4 charecter"],
+      set: (v) => bcrypt.hashSync(v, bcrypt.genSaltSync(10)),
     },
     gender: {
       type: String,
@@ -40,6 +40,10 @@ const userSchema = mongoose.Schema(
       type: String,
       default: null,
     },
+    userBookings: [{
+      type : mongoose.Schema.Types.ObjectId,
+      ref : "Booking",
+    }],
     isAdmin: {
       type: Boolean,
       default: false,

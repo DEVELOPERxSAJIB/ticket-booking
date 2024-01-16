@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
   createTheatre,
   deleteTheatre,
+  findUniqueTheatre,
   getAllTheatre,
   getTheatreByOwner,
   updateTheatreStatus,
@@ -75,6 +76,21 @@ const theatreSlice = createSlice({
       .addCase(getTheatreByOwner.fulfilled, (state, action) => {
         state.loader = false,
         state.theatre = action.payload.payload.theatre
+      })
+      .addCase(getTheatreByOwner.rejected, (state) => {
+        state.loader = false
+        state.theatre = null
+      })
+      .addCase(findUniqueTheatre.pending, (state) => {
+        state.loader = true
+      })
+      .addCase(findUniqueTheatre.fulfilled, (state, action) => {
+        state.loader = false,
+        state.theatre = action.payload.payload
+      })
+      .addCase(findUniqueTheatre.rejected, (state, action) => {
+        state.loader = false,
+        state.error = action.error.message
       })
   },
 });

@@ -2,7 +2,7 @@ import "./AddTheatre.css";
 import { Button, Col, Form, Input, Row, Select } from "antd";
 import ModalPopUp from "../../../utils/ModalPopUp";
 import TextArea from "antd/es/input/TextArea";
-import { CiEdit, CiTrash } from "react-icons/ci";
+import { CiTrash } from "react-icons/ci";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -231,7 +231,8 @@ const AddTheatres = () => {
                   <th scope="col">Movie</th>
                   <th scope="col">Ticket Price</th>
                   <th scope="col">Total Seats</th>
-                  <th scope="col">Available Seats</th>
+                  <th scope="col">Available</th>
+                  <th scope="col">Bookded</th>
                   <th scope="col">Action</th>
                 </tr>
               </thead>
@@ -253,16 +254,21 @@ const AddTheatres = () => {
                       <td className="py-3">{item.ticketPrice} tk</td>
                       <td className="py-3">{item.totalSeats}</td>
                       <td className="py-3">
-                        {item.totalSeats - item.bookedSeats}
+                        {item.totalSeats - item.bookedSeats.length} Seats
                       </td>
+                      <td className="py-3">{item.bookedSeats.length} Seats</td>
                       <td className="text-end py-3">
-                        <Button
-                          onClick={() => handleDeleteShowFromTheatre(item._id)}
-                          className="ant-btn btn-dangerous"
-                          size="small"
-                        >
-                          <AiOutlineDelete />
-                        </Button>
+                        {item.bookedSeats.length <= 0 ? (
+                          <Button
+                            onClick={() =>
+                              handleDeleteShowFromTheatre(item._id)
+                            }
+                            className="ant-btn btn-dangerous"
+                            size="small"
+                          >
+                            <AiOutlineDelete />
+                          </Button>
+                        ) : null}
                       </td>
                     </tr>
                   );
@@ -395,9 +401,6 @@ const AddTheatres = () => {
 
                   <td>{item.email}</td>
                   <td>
-                    <Button className="ant-btn ant-btn-primary" size="small">
-                      <CiEdit />
-                    </Button>
                     <Button
                       className="ant-btn ant-btn-dangerous ms-1"
                       size="small"
@@ -405,6 +408,7 @@ const AddTheatres = () => {
                     >
                       <CiTrash />
                     </Button>
+
                     {item.isActive && (
                       <Button
                         onClick={() => handleAddShowsTable(item._id)}
