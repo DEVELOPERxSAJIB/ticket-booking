@@ -1,5 +1,25 @@
 ![Ecommerce Web App Logo!](client/public/ticket-booking.png)
 
+## Live Preview
+
+```console
+ https://ticket-booking-client-vite.onrender.com
+```
+
+***Login as Admin***
+
+```console
+   email : sajibshikder78971@gmail.com
+   password : asdfg
+```
+
+***User Login Access***
+
+```console
+   email : user@gmail.com
+   password : asdfg
+```
+
 ## Installation or Download Project
 
 Open Terminal (Git Bash)
